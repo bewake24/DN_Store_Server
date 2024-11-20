@@ -279,12 +279,10 @@ const updateAvatar = asyncHandler(async (req, res) => {
 
   //Find old avatar from DB
   let oldAvatarPath = "";
+  const AVATAR_ROOT = path.resolve(__dirname, "..", "public", "uploads");
   if (user.avatar) {
-    oldAvatarPath = path.join(
-      __dirname,
-      "..",
-      "public",
-      "uploads",
+    oldAvatarPath = path.resolve(
+      AVATAR_ROOT,
       user.username,
       user.avatar
     );
@@ -295,7 +293,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
   await user.save();
 
   // Delete old avatar from server
-  if (fs.existsSync(oldAvatarPath)) {
+  if (oldAvatarPath.startsWith(AVATAR_ROOT) && fs.existsSync(oldAvatarPath)) {
     fs.unlink(oldAvatarPath, (err) => {
       if (err) {
         ApiResponse.error(res, "Failed to delete old avatar", 500, err);
